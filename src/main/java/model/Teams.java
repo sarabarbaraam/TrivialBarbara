@@ -29,4 +29,10 @@ public class Teams {
 
     private int teamTurn;
 
+    /**
+     * The quesitos
+     */
+
+    private int quesitos;
+
 }

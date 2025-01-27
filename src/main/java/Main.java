@@ -55,32 +55,30 @@ public class Main {
 
     private static void turns(@NotNull ArrayList<Teams> teamList) {
 
-        int turnNumber = 0;
+        while (!isWinner(teamList)) {
 
-        if (teamList.stream().allMatch(teams -> teams.getTeamTurn() == 0)) {
+            for (Teams team : teamList) {
 
-            int whoStart = getRandomInt(teamList.size());
+                roundsOfQuestions(team, team.getQuesitos());
 
-            String firstTeam = teamList.get(whoStart).getTeamName();
-            System.out.println();
-            System.out.println("¡" + firstTeam.toUpperCase() + " van primero!");
+                if (isWinner(teamList)) {
 
-            turnNumber++;
+                    title("FIN DEL JUEGO. " + team.getTeamName().toUpperCase() + " GANA");
+                    ranking(teamList);
+                    return;
+                }
+            }
 
-            teamList.get(whoStart).setTeamTurn(turnNumber);
-
-            roundsOfQuestions(firstTeam);
-
+            // ranking despues de que todos los equipos hayan respondido
+            ranking(teamList);
         }
-
 
     }
 
-    private static void roundsOfQuestions(@NotNull String team) {
-        // initialize questions
+    private static void roundsOfQuestions(@NotNull Teams team, int quesitos) {
 
         System.out.println();
-        System.out.println(team.toUpperCase() + ", responde a la pregunta: ");
+        System.out.println(team.getTeamName().toUpperCase() + ", responde a la pregunta: ");
 
         Questions question = getQuestions().get(getRandomInt(getQuestions().size()));
 
@@ -95,25 +93,73 @@ public class Main {
         // respuesta del usuario
 
         System.out.print("Respuesta: ");
-
         String answer = scanner.nextLine();
-        esTransformableAEntero(answer);
 
-        int userAnswer = Integer.parseInt(answer);
+        int userAnswer = 0;
+        if (esTransformableAEntero(answer)) {
+
+            userAnswer = Integer.parseInt(answer);
+
+        }
 
         if (userAnswer == question.getRightOption()) {
 
             System.out.println("¡Respuesta correcta!");
 
-            // mostrar clasificacion
+            quesitos++;
+            team.setQuesitos(quesitos);
+
+            System.out.println(team.getTeamName().toUpperCase() + " obtiene 1 quesito");
+            System.out.println();
 
         } else {
 
             System.out.println("¡Has fallado!");
+            System.out.println();
         }
 
-
     }
+
+    /**
+     * devuelve si hay un ganador o no
+     *
+     * @param teamList lista de los equipos participantes
+     *
+     * @return true o false
+     */
+
+    private static boolean isWinner(@NotNull ArrayList<Teams> teamList) {
+
+        for (Teams teams : teamList) {
+
+            if (teams.getQuesitos() == 5) {
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Ranking de los equipos
+     *
+     * @param teamList lista de los equipos que juegan
+     */
+    private static void ranking(@NotNull ArrayList<Teams> teamList) {
+        title("RANKING");
+        for (Teams teamScore : teamList) {
+
+            System.out.println(teamScore.getTeamName().toUpperCase() + ": " + teamScore.getQuesitos() + " "
+                    + "quesitos");
+        }
+    }
+
+    /**
+     * Coge las preguntas del fichero de preguntas
+     *
+     * @return lista de preguntas
+     */
 
     public static @NotNull ArrayList<Questions> getQuestions() {
 
