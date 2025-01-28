@@ -80,52 +80,53 @@ public class Main {
         System.out.println();
         System.out.println(team.getTeamName().toUpperCase() + ", responde a la pregunta: ");
 
-        ArrayList<Questions> questions = getQuestions();
-        Questions question = null;
+        ArrayList<Questions> questionList = getQuestions();
+        ArrayList<Questions> filteredQuestions = new ArrayList<>(); // lista temporal para filtrar preguntas
 
-        // filtrar preguntas por categorías no ganadas
+        // Filtrar preguntas por categorías no ganadas
+        for (Questions question : questionList) {
 
-        for (Questions q : questions) {
+            if (!team.hasWonCategory(question.getCategory())) {
 
-            if (!team.hasWonCategory(q.getCategory())) {
-                question = q;
-                break;
+                filteredQuestions.add(question);
             }
         }
 
-        if (question == null) {
-            System.out.println("No quedan preguntas disponibles para este equipo.");
-            return;
-        }
+        Questions randomQuestion = filteredQuestions.get(getRandomInt(filteredQuestions.size()));
 
-
-        System.out.println(question.getQuestion() + "\n\n"
-                + "1. " + question.getAnswer1() + "\n"
-                + "2. " + question.getAnswer2() + "\n"
-                + "3. " + question.getAnswer3() + "\n"
-                + "4. " + question.getAnswer4() + "\n");
+        System.out.println(randomQuestion.getQuestion() + "\n\n"
+                + "1. " + randomQuestion.getAnswer1() + "\n"
+                + "2. " + randomQuestion.getAnswer2() + "\n"
+                + "3. " + randomQuestion.getAnswer3() + "\n"
+                + "4. " + randomQuestion.getAnswer4() + "\n");
 
         System.out.print("Respuesta: ");
         String answer = scanner.nextLine();
 
-        int userAnswer = 0;
-        if (esTransformableAEntero(answer)) {
-            userAnswer = Integer.parseInt(answer);
+        while (!esTransformableAEntero(answer)) {
+
+            System.out.println("Por favor, introduce un número válido.");
+            System.out.print("Respuesta: ");
+            answer = scanner.nextLine();
+
         }
 
-        if (userAnswer == question.getRightOption()) {
-            System.out.println("¡Respuesta correcta!");
+        int userAnswer = Integer.parseInt(answer);
 
+        if (userAnswer == randomQuestion.getRightOption()) {
+
+            System.out.println("¡Respuesta correcta!");
             quesitos++;
             team.setQuesitos(quesitos);
 
             // marcar categoría como ganada
-            team.markCategoryWon(question.getCategory());
+            team.markCategoryWon(randomQuestion.getCategory());
 
             System.out.println(team.getTeamName().toUpperCase() + " obtiene 1 quesito");
             System.out.println();
 
         } else {
+
             System.out.println("¡Has fallado!");
             System.out.println();
         }
