@@ -75,6 +75,13 @@ public class Main {
 
     }
 
+    /**
+     * Preguntas para cada ronda
+     *
+     * @param team     el equipo al que le toca jugar
+     * @param quesitos quesitos del equipo
+     */
+
     private static void roundsOfQuestions(@NotNull Teams team, int quesitos) {
 
         System.out.println();
@@ -247,6 +254,12 @@ public class Main {
         return list;
     }
 
+    /**
+     * Pone el título bonito
+     *
+     * @param text el texto que va dentro de los #
+     */
+
     public static void title(@NotNull String text) {
 
         int length = text.length();
@@ -267,10 +280,26 @@ public class Main {
         System.out.println();
     }
 
+    /**
+     * Coge un número aletorio
+     *
+     * @param max el tamaño máximo de la lista
+     *
+     * @return un número aleatorio
+     */
+
     private static int getRandomInt(int max) {
 
         return new Random().nextInt(max);
     }
+
+    /**
+     * Comprueba que la cadena que pasa el usuario se puede transformar a numero entero
+     *
+     * @param cadena la cadena pasada
+     *
+     * @return true o false
+     */
 
     public static boolean esTransformableAEntero(String cadena) {
 
