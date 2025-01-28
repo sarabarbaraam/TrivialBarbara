@@ -24,6 +24,12 @@ public class Questions {
     private String question;
 
     /**
+     * The category
+     */
+
+    private String category;
+
+    /**
      * The answer1
      */
 

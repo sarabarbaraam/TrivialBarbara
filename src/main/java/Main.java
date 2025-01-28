@@ -80,9 +80,24 @@ public class Main {
         System.out.println();
         System.out.println(team.getTeamName().toUpperCase() + ", responde a la pregunta: ");
 
-        Questions question = getQuestions().get(getRandomInt(getQuestions().size()));
+        ArrayList<Questions> questions = getQuestions();
+        Questions question = null;
 
-        // mostrar preguntas
+        // filtrar preguntas por categorías no ganadas
+
+        for (Questions q : questions) {
+
+            if (!team.hasWonCategory(q.getCategory())) {
+                question = q;
+                break;
+            }
+        }
+
+        if (question == null) {
+            System.out.println("No quedan preguntas disponibles para este equipo.");
+            return;
+        }
+
 
         System.out.println(question.getQuestion() + "\n\n"
                 + "1. " + question.getAnswer1() + "\n"
@@ -90,30 +105,27 @@ public class Main {
                 + "3. " + question.getAnswer3() + "\n"
                 + "4. " + question.getAnswer4() + "\n");
 
-        // respuesta del usuario
-
         System.out.print("Respuesta: ");
         String answer = scanner.nextLine();
 
         int userAnswer = 0;
         if (esTransformableAEntero(answer)) {
-
             userAnswer = Integer.parseInt(answer);
-
         }
 
         if (userAnswer == question.getRightOption()) {
-
             System.out.println("¡Respuesta correcta!");
 
             quesitos++;
             team.setQuesitos(quesitos);
 
+            // marcar categoría como ganada
+            team.markCategoryWon(question.getCategory());
+
             System.out.println(team.getTeamName().toUpperCase() + " obtiene 1 quesito");
             System.out.println();
 
         } else {
-
             System.out.println("¡Has fallado!");
             System.out.println();
         }
@@ -165,7 +177,9 @@ public class Main {
 
         ArrayList<Questions> list = new ArrayList<>();
 
+        // ruta donde están los archivos de preguntas
         File folder = new File("src/main/java/questions");
+
         if (!folder.exists()) {
 
             title("Error al cargar el fichero");
@@ -178,24 +192,23 @@ public class Main {
 
                 if (file.isFile() && file.getName().endsWith(".txt")) {
 
+                    // del archivo como categoría (sin extensión .txt)
                     var topicName = file.getName().substring(0, file.getName().length() - 4);
-
-                    // TODO create topic
-
-
-                    // Read the question
 
                     try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 
                         String line;
                         ArrayList<String> block = new ArrayList<>();
-                        Questions questions = Questions.builder().build();
 
                         while ((line = br.readLine()) != null) {
 
                             block.add(line);
 
-                            if (block.size() == 6) { // número de lineas que componen una pregunta
+                            // Cada bloque de 6 líneas es una pregunta
+
+                            if (block.size() == 6) {
+
+                                // Crear pregunta con sus datos
 
                                 var question = block.get(0);
                                 var answer1 = block.get(1);
@@ -204,8 +217,11 @@ public class Main {
                                 var answer4 = block.get(4);
                                 var rightOption = Integer.parseInt(block.get(5));
 
-                                questions = Questions.builder()
+                                // Crear objeto Questions
+
+                                Questions questions = Questions.builder()
                                         .question(question)
+                                        .category(topicName)
                                         .answer1(answer1)
                                         .answer2(answer2)
                                         .answer3(answer3)
@@ -213,17 +229,16 @@ public class Main {
                                         .rightOption(rightOption)
                                         .build();
 
+                                list.add(questions);
+
                                 block.clear();
                             }
                         }
-
-                        list.add(questions);
 
                     } catch (IOException e) {
 
                         e.printStackTrace();
                     }
-
                 }
             }
         }

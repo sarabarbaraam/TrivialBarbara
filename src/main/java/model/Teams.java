@@ -2,6 +2,8 @@ package main.java.model;
 
 import lombok.*;
 
+import java.util.HashMap;
+
 /**
  * Teams class
  *
@@ -34,5 +36,20 @@ public class Teams {
      */
 
     private int quesitos;
+
+    /**
+     * The categoriesWon
+     */
+
+    @Builder.Default
+    private HashMap<String, Boolean> categoriesWon = new HashMap<>();
+
+    public void markCategoryWon(String category) {
+        this.categoriesWon.put(category, true);
+    }
+
+    public boolean hasWonCategory(String category) {
+        return this.categoriesWon.getOrDefault(category, false);
+    }
 
 }
